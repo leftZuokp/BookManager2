@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.peng.bms.mapper.NoticeMapper">
+  <resultMap id="BaseResultMap" type="com.peng.bms.model.Notice">
+    <id column="noticeId" jdbcType="INTEGER" property="noticeid" />
+    <result column="noticeTitle" jdbcType="VARCHAR" property="noticetitle" />
+    <result column="noticeContent" jdbcType="VARCHAR" property="noticecontent" />
+    <result column="noticeTime" jdbcType="VARCHAR" property="noticetime" />
+    <result column="authorName" jdbcType="VARCHAR" property="authorname" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    noticeId, noticeTitle, noticeContent, noticeTime, authorName
+  </sql>
+  <insert id="insertSelective" parameterType="com.peng.bms.model.Notice" useGeneratedKeys="true" keyProperty="noticeid">
+    insert into notice
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="noticetitle != null">noticeTitle,</if>
+      <if test="noticecontent != null">noticeContent,</if>
+      <if test="noticetime != null">noticeTime,</if>
+      <if test="authorname != null">authorName,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="noticetitle != null">#{noticetitle},</if>
+      <if test="noticecontent != null">#{noticecontent},</if>
+      <if test="noticetime != null">#{noticetime},</if>
+      <if test="authorname != null">#{authorname},</if>
+    </trim>
+  </insert>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from notice where noticeId = #{noticeid}
+  </delete>
+  <update id="updateByPrimaryKeySelective" parameterType="com.peng.bms.model.Notice">
+    update notice
+    <set>
+      <if test="noticetitle != null">noticeTitle = #{noticetitle},</if>
+      <if test="noticecontent != null">noticeContent = #{noticecontent},</if>
+      <if test="noticetime != null">noticeTime = #{noticetime},</if>
+    </set>
+    where noticeId = #{noticeid}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from notice where noticeId = #{noticeid}
+  </select>
+  <select id="selectCount" resultType="int">
+    select count(*) from notice
+  </select>
+  <select id="selectCountBySearch" resultType="int">
+    select count(*) from notice
+    <where>
+      <if test="noticetitle != null and noticetitle != '' ">
+        and noticeTitle like concat('%',#{noticetitle},'%')
+      </if>
+    </where>
+  </select>
+  <select id="selectBySearch" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from notice
+    <where>
+      <if test="noticetitle != null and noticetitle != '' ">
+        and noticeTitle like concat('%',#{noticetitle},'%')
+      </if>
+    </where>
+    order by noticeTime desc limit #{begin}, #{size}
+  </select>
+  <select id="selectLatest" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from notice order by noticeTime desc limit #{limit}
+  </select>
+</mapper>
